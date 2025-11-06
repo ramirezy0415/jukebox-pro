@@ -34,3 +34,15 @@ export async function getPlaylistById(id) {
   } = await db.query(sql, [id]);
   return playlist;
 }
+
+export async function getPlaylistByIdByUser(id, user_id) {
+  const sql = `
+  SELECT *
+  FROM playlists_tracks
+  WHERE playlist_id = $1 AND user_id = $2
+  `;
+  const {
+    rows: [playlist],
+  } = await db.query(sql, [id, user_id]);
+  return playlist;
+}

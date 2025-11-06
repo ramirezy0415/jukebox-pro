@@ -6,6 +6,7 @@ import {
   createPlaylist,
   getPlaylistById,
   getPlaylists,
+  getPlaylistByIdByUser,
 } from "#db/queries/playlists";
 import { createPlaylistTrack } from "#db/queries/playlists_tracks";
 import { getTracksByPlaylistId } from "#db/queries/tracks";
@@ -14,7 +15,6 @@ import requireUser from "#middleware/requireUser";
 router.use(requireUser);
 
 router.get("/", async (req, res) => {
-  console.log(req);
   const playlists = await getPlaylists();
   res.send(playlists);
 });
@@ -33,6 +33,10 @@ router.post("/", async (req, res) => {
 router.param("id", async (req, res, next, id) => {
   const playlist = await getPlaylistById(id);
   if (!playlist) return res.status(404).send("Playlist not found.");
+
+  const isOwner = await getPlaylistByIdByUser(id, req.user.id);
+  console.log(isOwner);
+  if (!isOwner) return res.status(403).send("User is not owner of playlist");
 
   req.playlist = playlist;
   next();

@@ -39,7 +39,7 @@ usersRouter.post(
       }
 
       const token = createToken({ id: userInfo.id });
-      return res.status(201).json(token);
+      return res.status(200).json(token);
     } catch (error) {
       console.error(error);
     }

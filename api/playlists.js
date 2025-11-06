@@ -9,9 +9,16 @@ import {
 } from "#db/queries/playlists";
 import { createPlaylistTrack } from "#db/queries/playlists_tracks";
 import { getTracksByPlaylistId } from "#db/queries/tracks";
+import requireUser from "#middleware/requireUser";
+
+router.use(requireUser);
 
 router.get("/", async (req, res) => {
-  const playlists = await getPlaylists();
+  console.log(req);
+  const playlists = await getPlaylists(req.user.id);
+  if (!playlists) {
+    return res.status(400).json({ error: "Unable to retrieve playlists" });
+  }
   res.send(playlists);
 });
 

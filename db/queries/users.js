@@ -49,3 +49,16 @@ export async function getUser(username, password) {
     console.error(error);
   }
 }
+
+export async function getUserById(id) {
+  try {
+    const query = `SELECT * FROM users WHERE id = $1`;
+    const {
+      rows: [user],
+    } = await db.query(query, [id]);
+
+    return user;
+  } catch (error) {
+    console.error(error);
+  }
+}

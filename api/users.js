@@ -13,13 +13,8 @@ usersRouter.post(
     try {
       const { username, password } = req.body;
       const registeredUser = await createUser(username, password);
-
-      if (!registeredUser) {
-        return res.status(500).json({ error: "Unable to insert user" });
-      }
-
       const token = createToken({ id: registeredUser.id });
-      return res.status(201).json(token);
+      return res.status(201).send(token);
     } catch (error) {
       console.error(error);
     }
@@ -39,7 +34,7 @@ usersRouter.post(
       }
 
       const token = createToken({ id: userInfo.id });
-      return res.status(201).json(token);
+      return res.send(token);
     } catch (error) {
       console.error(error);
     }

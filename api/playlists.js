@@ -11,6 +11,7 @@ import {
 import { createPlaylistTrack } from "#db/queries/playlists_tracks";
 import { getTracksByPlaylistId } from "#db/queries/tracks";
 import requireUser from "#middleware/requireUser";
+import requireBody from "#middleware/requireBody";
 
 router.use(requireUser);
 
@@ -35,7 +36,7 @@ router.param("id", async (req, res, next, id) => {
   if (!playlist) return res.status(404).send("Playlist not found.");
 
   const isOwner = await getPlaylistByIdByUser(id, req.user.id);
-  console.log(isOwner);
+
   if (!isOwner) return res.status(403).send("User is not owner of playlist");
 
   req.playlist = playlist;
@@ -51,12 +52,12 @@ router.get("/:id/tracks", async (req, res) => {
   res.send(tracks);
 });
 
-router.post("/:id/tracks", async (req, res) => {
-  if (!req.body) return res.status(400).send("Request body is required.");
-
+router.post("/:id/tracks", requireBody(["trackId"]), async (req, res) => {
   const { trackId } = req.body;
-  if (!trackId) return res.status(400).send("Request body requires: trackId");
-
-  const playlistTrack = await createPlaylistTrack(req.playlist.id, trackId);
+  const playlistTrack = await createPlaylistTrack(
+    req.params.id,
+    trackId,
+    req.user.id
+  );
   res.status(201).send(playlistTrack);
 });
